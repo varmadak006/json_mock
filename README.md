@@ -9,7 +9,7 @@ sbt run
 
 And then go to http://localhost:9000 to see the running web application.
 
-## Test Run
+## Test Run Results
 curl -X GET "http://localhost:9000/posts"
 
 =>[{"id":0,"title":"13","author":"CIQ","views":10,"reviews":31},{"id":3,"title":"31","author":"CIQ31","views":100,"reviews":1},{"id":4,"title":"foo","body":"bar","userId":1},{"id":5,"title":"foo5","body":"bar5","userId":5}]

@@ -17,6 +17,8 @@ curl -X GET "http://localhost:9000/posts"
 curl -X GET "http://localhost:9000/posts/0"
 =>{"id":0,"title":"13","author":"CIQ","views":10,"reviews":31}
 
+curl -X GET "http://localhost:9000/posts/5/author"
+=>[{"name1":"Joe","name2":"Biden"}]
 
 curl -X GET "http://localhost:9000/posts?_sort=id&_order=desc"
 =>[{"id":5,"title":"foo5","body":"bar5","userId":5},{"id":4,"title":"foo","body":"bar","userId":1},{"id":3,"title":"31","author":"CIQ31","views":100,"reviews":1},{"id":0,"title":"13","author":"CIQ","views":10,"reviews":31}]

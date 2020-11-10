@@ -25,7 +25,22 @@ public class JsonCRUDHelper {
 
     @Inject
     JsonStore jsonStore;
+
     public static final String FIELD_ID="id";
+
+    public JsonNode find(JsonNode jsonNode,String entity,Long id){
+
+        JsonNode entityArrayNode=jsonNode.path(entity);
+        if(entityArrayNode.isArray()) {
+            for (JsonNode entityNode : entityArrayNode) {
+                Long curId = entityNode.path(JsonCRUDHelper.FIELD_ID).asLong();
+                if (curId.equals(id)) {
+                    return entityNode;
+                }
+            }
+        }
+        return null;
+    }
 
     public Result doCrudOperation(String entityType, boolean iscreate, boolean isreplace, boolean isupdate, boolean isdelete, Long id){
         JsonNode requestBodyJsonNode=request().body().asJson();

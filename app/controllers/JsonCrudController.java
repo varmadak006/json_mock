@@ -41,17 +41,23 @@ public class JsonCrudController extends Controller {
 
     public Result getAllFilteredEntities(String entity,Long id){
         JsonNode jsonNode=jsonStore.getStoreData();
-        JsonNode entityArrayNode=jsonNode.path(entity);
-        if(entityArrayNode.isArray()) {
-            for (JsonNode entityNode : entityArrayNode) {
-                Long curId = entityNode.path(JsonCRUDHelper.FIELD_ID).asLong();
-                if (curId.equals(id)) {
-                    return ok(entityNode);
-                }
-            }
+
+        JsonNode entityNode=jsonCRUDHelper.find(jsonNode,entity,id);
+        if(entityNode!=null){
+            return ok(entityNode);
         }
         return notFound();
     }
+
+    public Result getAllFilteredSubEntities(String entity,Long id,String subentity){
+        JsonNode jsonNode=jsonStore.getStoreData();
+        JsonNode entityNode=jsonCRUDHelper.find(jsonNode,entity,id);
+        if(entityNode.path(subentity)!=null &&!entityNode.path(subentity).isMissingNode() ){
+            return ok(entityNode.path(subentity));
+        }
+        return notFound();
+    }
+
 
     public Result getAllEntities(String entity){
         Map<String,String[]> queryParams= request().queryString();

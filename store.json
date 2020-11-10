@@ -36,7 +36,11 @@
     "id" : 5,
     "title" : "foo5",
     "body" : "bar5",
-    "userId" : 5
+    "userId" : 5,
+    "author" : [{
+      "name1": "Joe",
+      "name2": "Biden"
+    }]
   } ],
   "movies" : [ {
     "name" : "Inception",

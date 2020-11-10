@@ -12,6 +12,7 @@ GET     /assets/*file               controllers.Assets.versioned(path="/public",
 
 GET     /:entity                      controllers.JsonCrudController.getAllEntities(entity:String)
 GET     /:entity/:id                      controllers.JsonCrudController.getAllFilteredEntities(entity:String,id:Long)
+GET     /:entity/:id/:subentity                      controllers.JsonCrudController.getAllFilteredSubEntities(entity:String,id:Long,subentity:String)
 POST    /:entity                          controllers.JsonCrudController.create(entity:String)
 PUT    /:entity/:id                          controllers.JsonCrudController.createOrReplace(entity:String,id:Long)
 PATCH    /:entity/:id                          controllers.JsonCrudController.update(entity:String,id:Long)

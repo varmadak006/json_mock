@@ -15,8 +15,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import static play.mvc.Controller.request;
-import static play.mvc.Results.internalServerError;
-import static play.mvc.Results.ok;
+import static play.mvc.Results.*;
 
 /**
  * Created by indraneel on 10/11/20
@@ -26,10 +25,21 @@ public class JsonCRUDHelper {
 
     @Inject
     JsonStore jsonStore;
+    public static final String FIELD_ID="id";
 
     public Result doCrudOperation(String entityType, boolean iscreate, boolean isreplace, boolean isupdate, boolean isdelete, Long id){
         JsonNode requestBodyJsonNode=request().body().asJson();
+        //id will be ignored for PUT OR PATCH if it is present in body
+        if(id!=null
+                && requestBodyJsonNode!=null
+                && requestBodyJsonNode.get(JsonCRUDHelper.FIELD_ID)!=null){
+            ((ObjectNode)requestBodyJsonNode).remove(JsonCRUDHelper.FIELD_ID);
+        }
+        if(id!=null && requestBodyJsonNode != null &&!isdelete){
+            ((ObjectNode)requestBodyJsonNode).put(FIELD_ID,id);
+        }
         JsonNode storeData=jsonStore.getStoreData();
+        boolean deleted=false;
         if(storeData.path(entityType).isMissingNode()){
             ((ObjectNode) storeData).putArray(entityType);
         }
@@ -38,18 +48,19 @@ public class JsonCRUDHelper {
 
         if(id!=null){
             idFromRequest=id;
-        }else if(!requestBodyJsonNode.path("id").isMissingNode()) {
+        }else if(!requestBodyJsonNode.path(JsonCRUDHelper.FIELD_ID).isMissingNode()) {
             // id can be sent in POST request
-            idFromRequest=requestBodyJsonNode.path("id").asLong();
+            idFromRequest=requestBodyJsonNode.path(JsonCRUDHelper.FIELD_ID).asLong();
         }
         if(entityArray.isArray()){
             for(int i=entityArray.size()-1;i>=0;i--){
                 JsonNode curEntity=entityArray.get(i);
-                long curEntityId=curEntity.path("id").asLong();
+                long curEntityId=curEntity.path(JsonCRUDHelper.FIELD_ID).asLong();
                 if(idFromRequest==curEntityId){
                     if(isreplace || isdelete){
                         //PUT -> remove and add at the end or DELETE -> delete the node
                         ((ArrayNode)entityArray).remove(i);
+                        deleted=true;
                     }else if(isupdate){
                         //PATCH -> modify the field value
                         Iterator<Map.Entry<String, JsonNode>> fieldIterator = requestBodyJsonNode.fields();
@@ -70,8 +81,8 @@ public class JsonCRUDHelper {
 
         if(!isdelete) {
             if (iscreate || isreplace) {
-                if (requestBodyJsonNode.path("id").isNull() || requestBodyJsonNode.path("id").isMissingNode()) {
-                    ((ObjectNode) requestBodyJsonNode).put("id", maxId + 1);
+                if (requestBodyJsonNode.path(JsonCRUDHelper.FIELD_ID).isNull() || requestBodyJsonNode.path(JsonCRUDHelper.FIELD_ID).isMissingNode()) {
+                    ((ObjectNode) requestBodyJsonNode).put(JsonCRUDHelper.FIELD_ID, maxId + 1);
                 }
                 ((ArrayNode) entityArray).add(requestBodyJsonNode);
             }
@@ -89,7 +100,7 @@ public class JsonCRUDHelper {
             } catch (IOException e) {
                 return internalServerError("unable to create at the moment");
             }
-            return ok();
+            return deleted?ok("deleted id "+id):notFound(" not found id "+id);
         }
     }
 
@@ -116,7 +127,5 @@ public class JsonCRUDHelper {
         }
         return ok(root);
     }
-
-
 
 }

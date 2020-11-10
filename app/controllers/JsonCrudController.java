@@ -44,47 +44,50 @@ public class JsonCrudController extends Controller {
         JsonNode entityArrayNode=jsonNode.path(entity);
         if(entityArrayNode.isArray()) {
             for (JsonNode entityNode : entityArrayNode) {
-                Long curId = entityNode.path("id").asLong();
+                Long curId = entityNode.path(JsonCRUDHelper.FIELD_ID).asLong();
                 if (curId.equals(id)) {
                     return ok(entityNode);
                 }
             }
         }
-        return ok();
+        return notFound();
     }
 
     public Result getAllEntities(String entity){
         Map<String,String[]> queryParams= request().queryString();
-        Set<String> searchParams=queryParams.keySet().stream()
+        Set<String> queryFilterParamsCols=queryParams.keySet().stream()
                 .filter(s->!s.startsWith("_") && !"q".equals(s))
                 .collect(Collectors.toSet());
 
         JsonNode jsonNode=jsonStore.getStoreData();
         JsonNode entityArrayNode=jsonNode.path(entity);
-        if(queryParams.size()==0 && searchParams.isEmpty()){
+        if(queryParams.size()==0 ){
+            //if there are no query params return all
             return ok(entityArrayNode);
         }
 
-        ArrayNode root = Json.newArray();
+        ArrayNode filteredArrayNode = Json.newArray();
         if(entityArrayNode.isArray()){
-            for (JsonNode entityNode : entityArrayNode) {
-                boolean entitysuccess=false;
-                for (String param : searchParams) {
-                    JsonNode value = entityNode.path(param);
-                    boolean multiValFilterSuccess=false;
-                    for(String queryparamvalue:queryParams.get(param)){
-                        multiValFilterSuccess|=value.asText().equals(queryparamvalue);
+            for (JsonNode curEntityNode : entityArrayNode) {
+                boolean entityMatchesAllFilterCriteria=false;
+                for (String param : queryFilterParamsCols) {
+                    JsonNode value = curEntityNode.path(param);
+                    //check if criteria satisfies for any of multiple vals of single param Ex: id=1&id=2
+                    boolean entityMatchesAnyFilterCriteriaVal=false;
+                    for(String queryParamValue:queryParams.get(param)){
+                        entityMatchesAnyFilterCriteriaVal |= value.asText().equals(queryParamValue);
                     }
-                    entitysuccess|=multiValFilterSuccess;
+                    entityMatchesAllFilterCriteria|=entityMatchesAnyFilterCriteriaVal;
                 }
 
+                //filter for basic search query
                 if(queryParams.containsKey("q")){
                     for(String queryParamvalue:queryParams.get("q")) {
-                        if(entityNode.toString().contains(queryParamvalue)) entitysuccess=true;
+                        if(!curEntityNode.isNull() && curEntityNode.toString().toLowerCase().contains(queryParamvalue.toLowerCase())) entityMatchesAllFilterCriteria=true;
                     }
                 }
-                if(entitysuccess){
-                    root.add(entityNode);
+                if(entityMatchesAllFilterCriteria){
+                    filteredArrayNode.add(curEntityNode);
                 }
             }
         }
@@ -92,13 +95,20 @@ public class JsonCrudController extends Controller {
         boolean orderByAsc=true;
         String sortCol=null;
         if(queryParams.containsKey(SORT_KEY)){
-            if(queryParams.containsKey(ORDER_KEY)){
-                orderByAsc=queryParams.get(ORDER_KEY)[0].equals("asc");
+            if(queryParams.containsKey(ORDER_KEY)) {
+                orderByAsc = queryParams.get(ORDER_KEY)[0].equals("asc");
+                if(!orderByAsc && !queryParams.get(ORDER_KEY)[0].equals("desc")){
+                    return badRequest("please enter valid orderBy clause => " +queryParams.get(ORDER_KEY)[0]);
+                }
             }
             sortCol= queryParams.get(SORT_KEY)[0];
-            return jsonCRUDHelper.sort(root,sortCol,orderByAsc);
+            if(queryFilterParamsCols.size()==0){
+                return jsonCRUDHelper.sort((ArrayNode)entityArrayNode,sortCol,orderByAsc);
+            }else{
+                return jsonCRUDHelper.sort(filteredArrayNode,sortCol,orderByAsc);
+            }
         }
-        return ok(root);
+        return ok(filteredArrayNode);
     }
 
 

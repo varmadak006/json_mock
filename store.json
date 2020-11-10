@@ -23,7 +23,7 @@
     "reviews" : 31
   }, {
     "id" : 3,
-    "title" : "31",
+    "title" : "3",
     "author" : "CIQ31",
     "views" : 100,
     "reviews" : 1
@@ -39,14 +39,14 @@
     "userId" : 5
   } ],
   "movies" : [ {
-    "id" : 3,
-    "name" : "Inception",
-    "director" : "Christopher Nolan",
-    "rating" : 9.0
-  }, {
     "name" : "Inception",
     "director" : "Christopher Nolan",
     "rating" : 9.0,
     "id" : 4
+  }, {
+    "name" : "PUT Inception",
+    "director" : "PUT Christopher Nolan",
+    "rating" : 10.0,
+    "id" : 3
   } ]
 }

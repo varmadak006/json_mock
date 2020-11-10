@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
  * This controller contains an action to handle HTTP requests
  * to the application's home page.
  */
-public class HomeController extends Controller {
+public class JsonCrudController extends Controller {
 
     /**
      * An action that renders an HTML page with a welcome message.
@@ -39,7 +39,7 @@ public class HomeController extends Controller {
     public static String SORT_KEY="_sort";
     public static String ORDER_KEY="_order";
 
-    public Result indexFilter(String entity,Long id){
+    public Result getAllFilteredEntities(String entity,Long id){
         JsonNode jsonNode=jsonStore.getStoreData();
         JsonNode entityArrayNode=jsonNode.path(entity);
         if(entityArrayNode.isArray()) {
@@ -53,7 +53,7 @@ public class HomeController extends Controller {
         return ok();
     }
 
-    public Result index(String entity){
+    public Result getAllEntities(String entity){
         Map<String,String[]> queryParams= request().queryString();
         Set<String> searchParams=queryParams.keySet().stream()
                 .filter(s->!s.startsWith("_") && !"q".equals(s))

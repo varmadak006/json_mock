@@ -3,16 +3,16 @@
 # ~~~~
 
 # An example controller showing how to use dependency injection
-GET     /count                      controllers.CountController.count
+GET     /                      controllers.JsonCrudController.index()
 # An example controller showing how to write asynchronous code
 GET     /message                    controllers.AsyncController.message
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
 
-GET     /:entity                      controllers.HomeController.index(entity:String)
-GET     /:entity/:id                      controllers.HomeController.indexFilter(entity:String,id:Long)
-POST    /:entity                          controllers.HomeController.create(entity:String)
-PUT    /:entity/:id                          controllers.HomeController.createOrReplace(entity:String,id:Long)
-PATCH    /:entity/:id                          controllers.HomeController.update(entity:String,id:Long)
-DELETE    /:entity/:id                          controllers.HomeController.delete(entity:String,id:Long)
+GET     /:entity                      controllers.JsonCrudController.getAllEntities(entity:String)
+GET     /:entity/:id                      controllers.JsonCrudController.getAllFilteredEntities(entity:String,id:Long)
+POST    /:entity                          controllers.JsonCrudController.create(entity:String)
+PUT    /:entity/:id                          controllers.JsonCrudController.createOrReplace(entity:String,id:Long)
+PATCH    /:entity/:id                          controllers.JsonCrudController.update(entity:String,id:Long)
+DELETE    /:entity/:id                          controllers.JsonCrudController.delete(entity:String,id:Long)

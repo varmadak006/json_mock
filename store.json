@@ -1,0 +1,52 @@
+{
+  "employees" : [ {
+    "id" : 1,
+    "first_name" : "Sebastian",
+    "last_name" : "Eschweiler",
+    "email" : "sebastian@codingthesmartway.com"
+  }, {
+    "id" : 2,
+    "first_name" : "Steve",
+    "last_name" : "Palmer",
+    "email" : "steve@codingthesmartway.com"
+  }, {
+    "id" : 3,
+    "first_name" : "Ann",
+    "last_name" : "Smith",
+    "email" : "ann@codingthesmartway.com"
+  } ],
+  "posts" : [ {
+    "id" : 0,
+    "title" : "13",
+    "author" : "CIQ",
+    "views" : 10,
+    "reviews" : 31
+  }, {
+    "id" : 3,
+    "title" : "31",
+    "author" : "CIQ31",
+    "views" : 100,
+    "reviews" : 1
+  }, {
+    "id" : 4,
+    "title" : "foo",
+    "body" : "bar",
+    "userId" : 1
+  }, {
+    "id" : 5,
+    "title" : "foo5",
+    "body" : "bar5",
+    "userId" : 5
+  } ],
+  "movies" : [ {
+    "id" : 3,
+    "name" : "Inception",
+    "director" : "Christopher Nolan",
+    "rating" : 9.0
+  }, {
+    "name" : "Inception",
+    "director" : "Christopher Nolan",
+    "rating" : 9.0,
+    "id" : 4
+  } ]
+}
